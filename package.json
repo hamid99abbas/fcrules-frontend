@@ -1,0 +1,19 @@
+{
+  "name": "fcrules-frontend",
+  "version": "1.0.0",
+  "description": "Football Laws of the Game - AI-powered frontend interface",
+  "scripts": {
+    "dev": "python -m http.server 8000",
+    "start": "python -m http.server 8000"
+  },
+  "keywords": [
+    "football",
+    "soccer",
+    "laws",
+    "ifab",
+    "ai",
+    "rag"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}
