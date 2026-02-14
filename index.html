@@ -903,7 +903,7 @@
             onkeydown="handleKeyDown(event)"
             oninput="autoResize(this)"
           ></textarea>
-          <button class="send-btn" id="send-btn" onclick="sendQuestion()" title="Send (Enter)">
+          <button class="send-btn" id="send-btn" onclick="handleSendButton()" title="Send (Enter)">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
               <path d="M14.5 8L1.5 1.5L4 8L1.5 14.5L14.5 8Z"/>
             </svg>
@@ -912,18 +912,7 @@
 
         <div class="input-footer">
           <div class="settings-row">
-            <div class="api-input-wrap">
-              <label>API</label>
-              <input type="text" id="api-url-input" value="https://fcrules.vercel.app" />
-            </div>
-            <div class="setting-chip" id="chip-evidence" onclick="toggleChip(this)">
-              <div class="setting-chip-dot"></div>
-              <span>Show Evidence</span>
-            </div>
-            <div class="setting-chip" id="chip-raw" onclick="toggleChip(this)">
-              <div class="setting-chip-dot"></div>
-              <span>Raw Chunks</span>
-            </div>
+            <!-- API configuration removed from UI -->
           </div>
           <div class="input-hint">
             <span class="kbd">Enter</span> send &nbsp; <span class="kbd">Shift+Enter</span> newline
@@ -956,18 +945,24 @@
   <script>
     // ─── STATE ────────────────────────────────────────────────────
     let isLoading = false;
-    let showEvidence = false;
-    let includeRawChunks = false;
+    let showEvidence = true;  // Always show evidence
+    let includeRawChunks = false;  // Never send raw chunks
     let sessionQuestions = 0;
-    const API_BASE = () => {
-  const val = document.getElementById('api-url-input')?.value.replace(/\/$/, '');
-  return val || 'https://fcrules.vercel.app'; // default to your backend API
-           };
+    let currentAbortController = null;  // For canceling ongoing requests
+    const API_BASE = () => 'https://fcrules.vercel.app';
 
     // ─── BOOT ─────────────────────────────────────────────────────
     window.addEventListener('DOMContentLoaded', () => {
       fetchStats();
-      autoResize(document.getElementById('question-input'));
+      const input = document.getElementById('question-input');
+      autoResize(input);
+      
+      // Mobile input focus handler - scroll input into view when keyboard appears
+      input.addEventListener('focus', () => {
+        setTimeout(() => {
+          input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300); // Delay to allow keyboard animation to start
+      });
     });
 
     async function fetchStats() {
@@ -1016,13 +1011,6 @@
       el.classList.add('stat-bump');
     }
 
-    // ─── TOGGLE CHIPS ─────────────────────────────────────────────
-    function toggleChip(el) {
-      el.classList.toggle('active');
-      if (el.id === 'chip-evidence') showEvidence = el.classList.contains('active');
-      if (el.id === 'chip-raw') includeRawChunks = el.classList.contains('active');
-    }
-
     // ─── SUGGESTION ───────────────────────────────────────────────
     function useSuggestion(btn) {
       const input = document.getElementById('question-input');
@@ -1046,7 +1034,7 @@
 
     // ─── SEND QUESTION ────────────────────────────────────────────
     async function sendQuestion() {
-      if (isLoading) return;
+      if (isLoading) return; // Don't send new question while one is processing
       const input = document.getElementById('question-input');
       const question = input.value.trim();
       if (!question) return;
@@ -1066,6 +1054,9 @@
       // show typing indicator
       const typingId = addTyping();
 
+      // Create new AbortController for this request
+      currentAbortController = new AbortController();
+
       try {
         const res = await fetch(`${API_BASE()}/ask`, {
           method: 'POST',
@@ -1074,7 +1065,8 @@
             question,
             top_k: 10,
             include_raw_chunks: includeRawChunks
-          })
+          }),
+          signal: currentAbortController.signal
         });
 
         removeTyping(typingId);
@@ -1090,10 +1082,14 @@
 
       } catch (err) {
         removeTyping(typingId);
-        addMessage('error', `⚠️ ${err.message || 'Could not connect to API.'}`);
-        showToast('Error: ' + (err.message || 'Could not reach API'), true);
+        // Don't show error if request was aborted (user clicked stop)
+        if (err.name !== 'AbortError') {
+          addMessage('error', `⚠️ ${err.message || 'Could not connect to API.'}`);
+          showToast('Error: ' + (err.message || 'Could not reach API'), true);
+        }
       } finally {
         setLoading(false);
+        currentAbortController = null;
       }
     }
 
@@ -1236,14 +1232,35 @@
     }
 
     // ─── HELPERS ──────────────────────────────────────────────────
+    function handleSendButton() {
+      if (isLoading) {
+        // Stop the current request
+        stopCurrentRequest();
+      } else {
+        // Send new question
+        sendQuestion();
+      }
+    }
+
+    function stopCurrentRequest() {
+      if (currentAbortController) {
+        currentAbortController.abort();
+        showToast('Request cancelled');
+      }
+    }
+
     function setLoading(v) {
       isLoading = v;
       const btn = document.getElementById('send-btn');
-      btn.disabled = v;
+      btn.disabled = false; // Never disable, always clickable
       if (v) {
-        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="25" stroke-dashoffset="0"><animateTransform attributeName="transform" type="rotate" from="0 8 8" to="360 8 8" dur="0.8s" repeatCount="indefinite"/></circle></svg>`;
+        // Show stop/square icon when loading
+        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="4" y="4" width="8" height="8" rx="1"/></svg>`;
+        btn.title = 'Stop';
       } else {
+        // Show arrow icon when ready
         btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M14.5 8L1.5 1.5L4 8L1.5 14.5L14.5 8Z"/></svg>`;
+        btn.title = 'Send (Enter)';
       }
     }
 
