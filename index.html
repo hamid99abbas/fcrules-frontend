@@ -1223,6 +1223,10 @@
       if (!text) return '';
       let out = escHtml(text);
 
+      // CRITICAL: Convert markdown bold **text** to HTML FIRST (before other processing)
+      // This handles the **Supporting Evidence:** and **Law X – Title** formatting from the API
+      out = out.replace(/\*\*(.+?)\*\*/g, '<strong style="color:var(--lime-bright);font-weight:600">$1</strong>');
+
       // bold section headers like "1) Relevant Law"
       out = out.replace(/^(\d+\))\s+(.+)$/gm, '<strong style="color:var(--lime-bright)">$1 $2</strong>');
 
