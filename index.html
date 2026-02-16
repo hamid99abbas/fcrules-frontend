@@ -1137,8 +1137,8 @@
       const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const ms = data.processing_time_ms ? Math.round(data.processing_time_ms) : null;
 
-      // retrieval info chips
-      const boostedLaws = (data.retrieval_info?.boosted_laws || []).map(l => `<span class="law-tag">Law ${l}</span>`).join('');
+      // retrieval info chips - DON'T show them at the top
+      // const boostedLaws = (data.retrieval_info?.boosted_laws || []).map(l => `<span class="law-tag">Law ${l}</span>`).join('');
 
       // Create the message wrapper
       const wrap = document.createElement('div');
@@ -1147,7 +1147,6 @@
         <div class="msg-avatar">⚽</div>
         <div class="msg-body">
           <div class="msg-bubble">
-            ${boostedLaws ? `<div style="margin-bottom:10px">${boostedLaws}</div>` : ''}
             <div class="ai-answer"></div>
           </div>
           <div class="msg-meta">
@@ -1234,9 +1233,9 @@
       out = out.replace(/(Decision|Restart|Discipline|Evidence):/g,
         '<strong style="color:var(--line-white);opacity:0.9">$1:</strong>');
 
-      // highlight law references
-      out = out.replace(/Law\s+(\d+)/gi,
-        '<span class="law-tag">Law $1</span>');
+      // REMOVED: Don't highlight individual law references since they're already bolded in **Law X** format
+      // This was causing the "Law8Law9" issue
+      // out = out.replace(/Law\s+(\d+)/gi, '<span class="law-tag">Law $1</span>');
 
       // highlight card mentions
       out = out.replace(/\byellow card\b/gi, '<span style="color:var(--yellow-card);font-weight:600">Yellow Card</span>');
