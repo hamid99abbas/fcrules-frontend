@@ -193,55 +193,6 @@
       animation: fadeUp 0.7s ease both;
     }
 
-    /* ─── SESSION CONTROLS ──────────────────────────────────────── */
-    .session-controls {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 12px;
-      background: var(--white-08);
-      border: 1px solid var(--border);
-      border-radius: var(--r-md);
-      margin-bottom: 16px;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--white-40);
-    }
-
-    .session-info {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .session-indicator {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--lime);
-      animation: pulse 2s ease infinite;
-    }
-
-    .new-session-btn {
-      background: var(--white-08);
-      border: 1px solid var(--border);
-      color: var(--white-70);
-      padding: 4px 12px;
-      border-radius: 100px;
-      font-size: 10px;
-      font-family: var(--font-mono);
-      cursor: pointer;
-      transition: all 0.2s;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .new-session-btn:hover {
-      background: var(--white-15);
-      color: var(--lime-bright);
-      border-color: rgba(132,204,22,0.3);
-    }
-
     /* ─── PITCH DIVIDER ─────────────────────────────────────────── */
     .pitch-divider {
       display: flex; align-items: center; gap: 16px;
@@ -409,22 +360,6 @@
 
     .msg.ai .msg-meta { padding-left: 2px; }
     .msg.user .msg-meta { padding-right: 2px; flex-direction: row-reverse; }
-
-    /* context badge */
-    .context-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: rgba(163,230,53,0.1);
-      border: 1px solid rgba(163,230,53,0.2);
-      border-radius: 100px;
-      padding: 2px 8px;
-      font-size: 9px;
-      color: var(--lime-bright);
-      font-family: var(--font-mono);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
 
     /* ─── AI ANSWER FORMATTING ──────────────────────────────────── */
     .ai-answer { white-space: pre-wrap; }
@@ -605,6 +540,69 @@
       font-size: 9px;
     }
 
+    /* ─── SETTINGS PANEL ────────────────────────────────────────── */
+    .settings-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .setting-chip {
+      display: flex; align-items: center; gap: 7px;
+      background: var(--white-08);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 5px 12px;
+      font-size: 11px;
+      color: var(--white-70);
+      font-family: var(--font-mono);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s;
+      letter-spacing: 0.05em;
+    }
+
+    .setting-chip:hover { border-color: var(--border); background: var(--white-15); }
+    .setting-chip.active { border-color: rgba(132,204,22,0.4); color: var(--lime-bright); background: rgba(132,204,22,0.08); }
+
+    .setting-chip-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--white-40);
+      transition: background 0.2s;
+    }
+
+    .setting-chip.active .setting-chip-dot { background: var(--lime); }
+
+    /* api url input */
+    .api-input-wrap {
+      flex: 1; min-width: 200px;
+      display: flex; align-items: center; gap: 8px;
+      background: var(--white-08);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 5px 14px;
+    }
+
+    .api-input-wrap label {
+      font-size: 10px;
+      font-family: var(--font-mono);
+      color: var(--white-40);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    #api-url-input {
+      flex: 1;
+      background: none; border: none; outline: none;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--lime);
+      min-width: 0;
+    }
+
     /* ─── FOOTER ────────────────────────────────────────────────── */
     footer {
       padding: 0 24px 28px;
@@ -744,25 +742,51 @@
 
     /* ─── MOBILE ────────────────────────────────────────────────── */
     @media (max-width: 640px) {
+      /* hero */
       .hero { padding: 28px 16px 16px; }
       h1 { font-size: clamp(48px, 18vw, 72px); }
       .hero-sub { font-size: 13px; padding: 0 8px; }
+
+      /* stats */
       .stats-row { gap: 16px 24px; }
       .stat-val { font-size: 22px; }
       .stat-label { font-size: 9px; }
+
+      /* chat */
       .chat-wrapper { padding: 0 12px 16px; }
       .messages { max-height: 46vh; min-height: 200px; }
+
+      /* bubbles */
       .msg-bubble { font-size: 13px; padding: 12px 14px; max-width: 100%; }
       .msg-avatar { width: 28px; height: 28px; font-size: 11px; }
+
+      /* input */
       .input-shell { padding: 10px 12px; border-radius: 14px; }
       #question-input { font-size: 14px; }
       .send-btn { width: 34px; height: 34px; }
+
+      /* settings row — stack on small screens */
+      .settings-row { flex-direction: column; align-items: stretch; gap: 8px; }
+      .api-input-wrap { min-width: unset; }
       .input-footer { flex-direction: column; align-items: flex-start; gap: 8px; }
       .input-hint { align-self: flex-end; }
+
+      /* footer */
       .footer-inner { flex-direction: column; align-items: center; text-align: center; gap: 14px; }
       .footer-brand-label { align-items: center; }
+
+      /* hide corner flags on tiny screens */
       .corner-flag { display: none; }
+
+      /* pitch arc — shrink */
       .pitch-arc { width: 360px; height: 200px; bottom: -100px; }
+    }
+
+    /* ─── SMALL TABLET ──────────────────────────────────────────── */
+    @media (min-width: 641px) and (max-width: 900px) {
+      .chat-wrapper { padding: 0 20px 20px; }
+      .messages { max-height: 48vh; }
+      .settings-row { flex-wrap: wrap; }
     }
 
     /* ─── PITCH HALF-CIRCLE DECORATION ─────────────────────────── */
@@ -786,6 +810,7 @@
     }
     .corner-flag.tl { top: 0; left: 0; }
     .corner-flag.tr { top: 0; right: 0; }
+
     .corner-flag svg { width: 120px; height: 120px; }
   </style>
 </head>
@@ -817,10 +842,10 @@
     <header class="hero">
       <div class="badge">
         <div class="badge-dot"></div>
-        <span>AI-Powered · Official IFAB Rules · Context-Aware</span>
+        <span>AI-Powered · Official IFAB Rules · Always Accurate</span>
       </div>
       <h1>FOOTBALL<br><span class="accent">LAW</span></h1>
-      <p class="hero-sub">Ask any question about the Laws of the Game — powered by AI with context awareness</p>
+      <p class="hero-sub">Ask any question about the Laws of the Game — powered by AI &amp; official IFAB rules</p>
 
       <div class="stats-row" id="stats-row">
         <div class="stat">
@@ -845,15 +870,6 @@
     <!-- MAIN CHAT -->
     <main class="chat-wrapper">
 
-      <!-- Session controls -->
-      <div class="session-controls">
-        <div class="session-info">
-          <div class="session-indicator"></div>
-          <span id="session-status">Session Active</span>
-        </div>
-        <button class="new-session-btn" onclick="createNewSession()">New Conversation</button>
-      </div>
-
       <div class="pitch-divider">
         <span>KICK OFF</span>
       </div>
@@ -868,7 +884,7 @@
             <circle cx="32" cy="32" r="8" fill="white"/>
             <path d="M32 2 C20 8 16 20 22 32 C16 44 20 56 32 62 C44 56 48 44 42 32 C48 20 44 8 32 2Z" stroke="white" stroke-width="1.5" fill="none"/>
           </svg>
-          <p>No questions yet. Ask about offside, handball, penalties, red cards, restarts — anything from the Laws of the Game. Your conversation is tracked for context-aware follow-ups!</p>
+          <p>No questions yet. Ask about offside, handball, penalties, red cards, restarts — anything from the Laws of the Game.</p>
           <div class="suggestions" id="suggestions">
             <button class="suggestion-btn" onclick="useSuggestion(this)">What is the handball rule?</button>
             <button class="suggestion-btn" onclick="useSuggestion(this)">When is a penalty awarded?</button>
@@ -885,7 +901,7 @@
         <div class="input-shell">
           <textarea
             id="question-input"
-            placeholder="Ask about any football law… (context-aware)"
+            placeholder="Ask about any football law…"
             rows="1"
             onkeydown="handleKeyDown(event)"
             oninput="autoResize(this)"
@@ -898,6 +914,9 @@
         </div>
 
         <div class="input-footer">
+          <div class="settings-row">
+            <!-- API configuration removed from UI -->
+          </div>
           <div class="input-hint">
             <span class="kbd">Enter</span> send &nbsp; <span class="kbd">Shift+Enter</span> newline
           </div>
@@ -910,7 +929,7 @@
       <div class="footer-rule"></div>
       <div class="footer-inner">
         <div class="footer-copy">
-          FootballLaw AI &nbsp;·&nbsp; <a href="https://www.theifab.com/laws-edition/2024-25/guidelines-and-notes/guidelines-for-match-officials/" target="_blank" rel="noopener">IFAB Laws of the Game</a> &nbsp;·&nbsp; RAG v2.5 (Context-Aware)
+          FootballLaw AI &nbsp;·&nbsp; <a href="https://www.theifab.com/laws-edition/2024-25/guidelines-and-notes/guidelines-for-match-officials/" target="_blank" rel="noopener">IFAB Laws of the Game</a> &nbsp;·&nbsp; RAG v2.0
         </div>
         <a class="footer-brand" href="https://firswoodintelligence.com" target="_blank" rel="noopener" title="Visit Firswood Intelligence">
           <div class="footer-brand-label">
@@ -937,107 +956,23 @@
   <script>
     // ─── STATE ────────────────────────────────────────────────────
     let isLoading = false;
-    let showEvidence = true;
-    let includeRawChunks = false;
+    let showEvidence = true;  // Always show evidence
+    let includeRawChunks = false;  // Never send raw chunks
     let sessionQuestions = 0;
-    let currentAbortController = null;
-    let currentSessionId = null;
+    let currentAbortController = null;  // For canceling ongoing requests
     const API_BASE = () => 'https://fcrules.vercel.app';
 
-    // ─── SESSION MANAGEMENT ───────────────────────────────────────
-    async function initializeSession() {
-      // Check if we have a stored session ID
-      currentSessionId = localStorage.getItem('football_law_session_id');
-      
-      if (!currentSessionId) {
-        // Create new session
-        await createNewSession();
-      } else {
-        // Validate existing session
-        try {
-          const r = await fetch(`${API_BASE()}/session/${currentSessionId}`, { 
-            signal: AbortSignal.timeout(4000) 
-          });
-          if (!r.ok) {
-            // Session expired, create new one
-            await createNewSession();
-          } else {
-            updateSessionStatus('active');
-          }
-        } catch (e) {
-          // Error validating, create new session
-          await createNewSession();
-        }
-      }
-    }
-
-    async function createNewSession() {
-      try {
-        const r = await fetch(`${API_BASE()}/session/new`, {
-          method: 'POST',
-          signal: AbortSignal.timeout(4000)
-        });
-        
-        if (r.ok) {
-          const data = await r.json();
-          currentSessionId = data.session_id;
-          localStorage.setItem('football_law_session_id', currentSessionId);
-          updateSessionStatus('active');
-          
-          // Clear messages
-          const messages = document.getElementById('messages');
-          messages.innerHTML = `
-            <div class="empty-state" id="empty-state">
-              <svg class="ball-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="32" cy="32" r="30" stroke="white" stroke-width="2"/>
-                <path d="M32 2 L32 12 M32 52 L32 62 M2 32 L12 32 M52 32 L62 32" stroke="white" stroke-width="1.5"/>
-                <circle cx="32" cy="32" r="8" fill="white"/>
-                <path d="M32 2 C20 8 16 20 22 32 C16 44 20 56 32 62 C44 56 48 44 42 32 C48 20 44 8 32 2Z" stroke="white" stroke-width="1.5" fill="none"/>
-              </svg>
-              <p>New conversation started! Ask about offside, handball, penalties, red cards, restarts — anything from the Laws of the Game.</p>
-              <div class="suggestions" id="suggestions">
-                <button class="suggestion-btn" onclick="useSuggestion(this)">What is the handball rule?</button>
-                <button class="suggestion-btn" onclick="useSuggestion(this)">When is a penalty awarded?</button>
-                <button class="suggestion-btn" onclick="useSuggestion(this)">Can a goalkeeper score from a goal kick?</button>
-                <button class="suggestion-btn" onclick="useSuggestion(this)">What counts as offside?</button>
-                <button class="suggestion-btn" onclick="useSuggestion(this)">When is a dropped ball used?</button>
-                <button class="suggestion-btn" onclick="useSuggestion(this)">What is a red card offence?</button>
-              </div>
-            </div>
-          `;
-          
-          // Reset session counter
-          sessionQuestions = 0;
-          document.getElementById('stat-session').textContent = '0';
-          
-          showToast('New conversation started');
-        }
-      } catch (e) {
-        console.error('Failed to create session:', e);
-        updateSessionStatus('error');
-      }
-    }
-
-    function updateSessionStatus(status) {
-      const statusEl = document.getElementById('session-status');
-      if (status === 'active') {
-        statusEl.textContent = 'Session Active';
-      } else if (status === 'error') {
-        statusEl.textContent = 'Session Error';
-      }
-    }
-
     // ─── BOOT ─────────────────────────────────────────────────────
-    window.addEventListener('DOMContentLoaded', async () => {
-      await initializeSession();
+    window.addEventListener('DOMContentLoaded', () => {
       fetchStats();
       const input = document.getElementById('question-input');
       autoResize(input);
-      
+
+      // Mobile input focus handler - scroll input into view when keyboard appears
       input.addEventListener('focus', () => {
         setTimeout(() => {
           input.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 300);
+        }, 300); // Delay to allow keyboard animation to start
       });
     });
 
@@ -1048,15 +983,17 @@
         const d = await r.json();
         document.getElementById('stat-laws').textContent = d.unique_laws?.length ?? '—';
 
+        // Prefer all_time_queries (persistent) — fall back to total_queries_processed
         const allTime = d.all_time_queries ?? d.total_queries_processed ?? null;
         if (allTime !== null) {
           animateCounter('stat-queries', allTime);
         }
       } catch (_) {
-        // API not connected
+        // API not connected — stat-queries stays as '—'
       }
     }
 
+    // Animated count-up for the all-time stat
     function animateCounter(id, target) {
       const el = document.getElementById(id);
       const current = parseInt(el.textContent.replace(/,/g, '')) || 0;
@@ -1066,6 +1003,7 @@
       const from = current;
       function tick(now) {
         const p = Math.min((now - start) / duration, 1);
+        // ease-out cubic
         const eased = 1 - Math.pow(1 - p, 3);
         const val = Math.round(from + (target - from) * eased);
         el.textContent = val.toLocaleString();
@@ -1107,35 +1045,33 @@
 
     // ─── SEND QUESTION ────────────────────────────────────────────
     async function sendQuestion() {
-      if (isLoading) return;
+      if (isLoading) return; // Don't send new question while one is processing
       const input = document.getElementById('question-input');
       const question = input.value.trim();
       if (!question) return;
 
+      // hide empty state
       document.getElementById('empty-state')?.remove();
+
+      // clear input
       input.value = '';
       autoResize(input);
 
+      // add user bubble
       addMessage('user', question);
       incrementSessionCounter();
       setLoading(true);
 
+      // show typing indicator
       const typingId = addTyping();
+
+      // Create new AbortController for this request
       currentAbortController = new AbortController();
 
       try {
-        const headers = {
-          'Content-Type': 'application/json'
-        };
-        
-        // Add session ID to headers
-        if (currentSessionId) {
-          headers['X-Session-ID'] = currentSessionId;
-        }
-
         const res = await fetch(`${API_BASE()}/ask`, {
           method: 'POST',
-          headers: headers,
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             question,
             top_k: 10,
@@ -1152,18 +1088,12 @@
         }
 
         const data = await res.json();
-        
-        // Update session ID if returned
-        if (data.session_id && data.session_id !== 'none') {
-          currentSessionId = data.session_id;
-          localStorage.setItem('football_law_session_id', currentSessionId);
-        }
-        
         addAIMessage(data);
-        fetchStats();
+        fetchStats(); // refresh Total Answered from API
 
       } catch (err) {
         removeTyping(typingId);
+        // Don't show error if request was aborted (user clicked stop)
         if (err.name !== 'AbortError') {
           addMessage('error', `⚠️ ${err.message || 'Could not connect to API.'}`);
           showToast('Error: ' + (err.message || 'Could not reach API'), true);
@@ -1207,17 +1137,16 @@
       const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const ms = data.processing_time_ms ? Math.round(data.processing_time_ms) : null;
 
-      // Check if this was a follow-up question
-      const isFollowUp = data.retrieval_info?.is_follow_up || false;
-      const contextBadge = isFollowUp ? '<span class="context-badge">🔗 Context-Aware</span>' : '';
+      // retrieval info chips - DON'T show them at the top
+      // const boostedLaws = (data.retrieval_info?.boosted_laws || []).map(l => `<span class="law-tag">Law ${l}</span>`).join('');
 
+      // Create the message wrapper
       const wrap = document.createElement('div');
       wrap.className = 'msg ai';
       wrap.innerHTML = `
         <div class="msg-avatar">⚽</div>
         <div class="msg-body">
           <div class="msg-bubble">
-            ${contextBadge ? `<div style="margin-bottom:8px">${contextBadge}</div>` : ''}
             <div class="ai-answer"></div>
           </div>
           <div class="msg-meta">
@@ -1227,13 +1156,16 @@
         </div>`;
 
       messages.appendChild(wrap);
-      
+
+      // Scroll to the TOP of this new message
       requestAnimationFrame(() => {
         wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
 
+      // Stream the answer text with typing effect
       const answerDiv = wrap.querySelector('.ai-answer');
       streamText(answerDiv, data.answer, () => {
+        // After streaming is complete, add evidence
         if (showEvidence && data.evidence && data.evidence.length > 0) {
           const items = data.evidence.slice(0, 5).map(e => `
             <div class="evidence-item">
@@ -1250,7 +1182,7 @@
             </button>
             <div class="evidence-panel">${items}</div>
           `;
-          
+
           const bubble = wrap.querySelector('.msg-bubble');
           bubble.insertAdjacentHTML('beforeend', evidenceHtml);
         }
@@ -1265,8 +1197,8 @@
       }
 
       let index = 0;
-      const chunkSize = 5;
-      const delay = 8;
+      const chunkSize = 5; // Characters to add per frame
+      const delay = 8; // ms between chunks (lower = faster)
 
       function addChunk() {
         if (index < text.length) {
@@ -1276,6 +1208,7 @@
           element.innerHTML = formattedText;
           setTimeout(addChunk, delay);
         } else {
+          // Streaming complete - do final format
           element.innerHTML = formatAnswer(text);
           if (onComplete) onComplete();
         }
@@ -1289,15 +1222,20 @@
       if (!text) return '';
       let out = escHtml(text);
 
-      // Convert markdown bold **text** to HTML
+      // CRITICAL: Convert markdown bold **text** to HTML FIRST (before other processing)
+      // This handles the **Supporting Evidence:** and **Law X – Title** formatting from the API
       out = out.replace(/\*\*(.+?)\*\*/g, '<strong style="color:var(--lime-bright);font-weight:600">$1</strong>');
 
-      // bold section headers
+      // bold section headers like "1) Relevant Law"
       out = out.replace(/^(\d+\))\s+(.+)$/gm, '<strong style="color:var(--lime-bright)">$1 $2</strong>');
 
-      // bold keywords
+      // bold "Decision:", "Restart:", "Discipline:"
       out = out.replace(/(Decision|Restart|Discipline|Evidence):/g,
         '<strong style="color:var(--line-white);opacity:0.9">$1:</strong>');
+
+      // REMOVED: Don't highlight individual law references since they're already bolded in **Law X** format
+      // This was causing the "Law8Law9" issue
+      // out = out.replace(/Law\s+(\d+)/gi, '<span class="law-tag">Law $1</span>');
 
       // highlight card mentions
       out = out.replace(/\byellow card\b/gi, '<span style="color:var(--yellow-card);font-weight:600">Yellow Card</span>');
@@ -1345,8 +1283,10 @@
     // ─── HELPERS ──────────────────────────────────────────────────
     function handleSendButton() {
       if (isLoading) {
+        // Stop the current request
         stopCurrentRequest();
       } else {
+        // Send new question
         sendQuestion();
       }
     }
@@ -1361,11 +1301,13 @@
     function setLoading(v) {
       isLoading = v;
       const btn = document.getElementById('send-btn');
-      btn.disabled = false;
+      btn.disabled = false; // Never disable, always clickable
       if (v) {
+        // Show stop/square icon when loading
         btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="4" y="4" width="8" height="8" rx="1"/></svg>`;
         btn.title = 'Stop';
       } else {
+        // Show arrow icon when ready
         btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M14.5 8L1.5 1.5L4 8L1.5 14.5L14.5 8Z"/></svg>`;
         btn.title = 'Send (Enter)';
       }
