@@ -741,25 +741,71 @@
     }
 
     @media (max-width: 640px) {
-      .hero { padding: 28px 16px 16px; }
-      h1 { font-size: clamp(48px, 18vw, 72px); }
-      .hero-sub { font-size: 13px; padding: 0 8px; }
-      .stats-row { gap: 16px 24px; }
-      .stat-val { font-size: 22px; }
-      .stat-label { font-size: 9px; }
-      .chat-wrapper { padding: 0 12px 16px; }
-      .messages { max-height: 46vh; min-height: 200px; }
+      /* ── Hero collapses to minimal strip ── */
+      .hero { padding: 16px 16px 10px; }
+      h1 { font-size: clamp(36px, 14vw, 56px); }
+      .hero-sub { font-size: 12px; padding: 0 8px; margin-top: 6px; }
+      .badge { font-size: 9px; padding: 4px 12px; margin-bottom: 10px; }
+      .stats-row { gap: 10px 18px; margin-top: 10px; }
+      .stat-val { font-size: 18px; }
+      .stat-label { font-size: 8px; }
+
+      /* ── App becomes a true fixed-height column ── */
+      .app {
+        height: 100dvh;           /* dynamic viewport = shrinks with keyboard */
+        height: 100vh;            /* fallback */
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;         /* nothing scrolls except .messages */
+      }
+
+      /* ── Chat wrapper fills remaining space ── */
+      .chat-wrapper {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 0 12px 0;
+        overflow: hidden;
+        min-height: 0;            /* critical: lets flex children shrink */
+      }
+
+      /* ── Messages scroll independently ── */
+      .messages {
+        flex: 1;
+        min-height: 0;            /* critical: allows shrinking */
+        max-height: none;         /* override the vh-based max-height */
+        overflow-y: auto;
+      }
+
+      /* ── Input area always sticks at bottom ── */
+      .input-area {
+        flex-shrink: 0;
+        padding-top: 8px;
+        padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+      }
+
+      /* ── Footer hidden on mobile — saves space ── */
+      footer { display: none; }
+
+      /* ── Misc ── */
       .msg-bubble { font-size: 13px; padding: 12px 14px; max-width: 100%; }
       .msg-avatar { width: 28px; height: 28px; font-size: 11px; }
       .input-shell { padding: 10px 12px; border-radius: 14px; }
-      #question-input { font-size: 16px; }
+      #question-input { font-size: 16px; } /* Prevents iOS zoom */
       .send-btn { width: 44px; height: 44px; }
-      .input-footer { flex-direction: column; align-items: flex-start; gap: 8px; }
-      .input-hint { align-self: flex-end; }
-      .footer-inner { flex-direction: column; align-items: center; text-align: center; gap: 14px; }
-      .footer-brand-label { align-items: center; }
+      .input-footer { flex-direction: row; justify-content: space-between; align-items: center; gap: 4px; }
       .corner-flag { display: none; }
-      .pitch-arc { width: 360px; height: 200px; bottom: -100px; }
+      .pitch-arc { display: none; }
+
+      /* ── Session controls smaller ── */
+      .session-controls { padding: 6px 10px; margin-bottom: 8px; }
+      .pitch-divider { margin-bottom: 12px; }
+
+      /* ── When keyboard is open (.kb-open class added by JS) ── */
+      .kb-open .hero { display: none; }
+      .kb-open .session-controls { display: none; }
+      .kb-open .pitch-divider { display: none; }
+      .kb-open .offline-banner { display: none !important; }
     }
   </style>
 </head>
@@ -1484,6 +1530,43 @@
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => { t.className = 'toast'; }, 3500);
     }
+
+    // ─── MOBILE KEYBOARD DETECTION ────────────────────────────────
+    // When the soft keyboard opens it shrinks window.innerHeight.
+    // We add .kb-open to <body> so CSS can hide non-essential elements.
+    (function () {
+      if (window.innerWidth > 640) return;
+
+      const THRESHOLD = 150;
+      const initialHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
+      function onResize() {
+        const current = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+        const shrunk = (initialHeight - current) > THRESHOLD;
+        document.body.classList.toggle('kb-open', shrunk);
+        if (shrunk) {
+          requestAnimationFrame(() => {
+            const m = document.getElementById('messages');
+            if (m) m.scrollTop = m.scrollHeight;
+          });
+        }
+      }
+
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', onResize);
+      } else {
+        window.addEventListener('resize', onResize);
+      }
+
+      // Fallback: focus/blur for browsers that skip resize events
+      const input = document.getElementById('question-input');
+      if (input) {
+        input.addEventListener('focus', () => setTimeout(onResize, 300));
+        input.addEventListener('blur', () => {
+          setTimeout(() => document.body.classList.remove('kb-open'), 100);
+        });
+      }
+    })();
   </script>
 </body>
 </html>
