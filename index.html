@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="FootballLaw AI — Ask any question about the Laws of the Game. Powered by AI." />
+  <meta name="theme-color" content="#0a1a0e" />
   <title>FootballLaw — Laws of the Game AI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,7 +20,6 @@
       --line-white:   #e8f5ea;
       --stripe-a:     #0f2614;
       --stripe-b:     #112c17;
-      --grass-glow:   rgba(34, 197, 94, 0.07);
       --lime:         #84cc16;
       --lime-bright:  #a3e635;
       --amber:        #f59e0b;
@@ -29,13 +30,14 @@
       --white-15:     rgba(232,245,234,0.15);
       --white-08:     rgba(232,245,234,0.08);
       --border:       rgba(232,245,234,0.12);
-      --shadow-lg:    0 20px 60px rgba(0,0,0,0.6);
       --r-sm: 6px;
       --r-md: 12px;
       --r-lg: 20px;
       --font-display: 'Bebas Neue', sans-serif;
       --font-body:    'DM Sans', sans-serif;
       --font-mono:    'JetBrains Mono', monospace;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-top: env(safe-area-inset-top, 0px);
     }
 
     html { scroll-behavior: smooth; }
@@ -46,7 +48,6 @@
       color: var(--line-white);
       min-height: 100vh;
       overflow-x: hidden;
-      cursor: default;
       font-size: 16px;
     }
 
@@ -61,7 +62,6 @@
       opacity: 0.6;
     }
 
-    /* radial spotlight overlay */
     .pitch-bg::after {
       content: '';
       position: absolute; inset: 0;
@@ -72,7 +72,6 @@
       );
     }
 
-    /* pitch lines watermark */
     .pitch-lines {
       position: fixed; inset: 0; z-index: 0; pointer-events: none;
       opacity: 0.04;
@@ -82,7 +81,6 @@
       background-size: 80px 80px;
     }
 
-    /* ─── NOISE GRAIN ───────────────────────────────────────────── */
     .grain {
       position: fixed; inset: 0; z-index: 999; pointer-events: none;
       opacity: 0.025;
@@ -95,7 +93,27 @@
       display: grid;
       grid-template-rows: auto 1fr auto;
       min-height: 100vh;
+      min-height: -webkit-fill-available;
+      padding-top: var(--safe-top);
     }
+
+    /* ─── SKIP TO CONTENT (Accessibility) ─────────────────────── */
+    .skip-link {
+      position: absolute;
+      top: -100px;
+      left: 16px;
+      background: var(--lime);
+      color: var(--pitch-dark);
+      padding: 8px 16px;
+      border-radius: var(--r-sm);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      z-index: 10000;
+      transition: top 0.2s;
+    }
+    .skip-link:focus { top: 16px; }
 
     /* ─── HERO / HEADER ─────────────────────────────────────────── */
     .hero {
@@ -123,6 +141,7 @@
       border-radius: 50%;
       background: var(--lime);
       animation: pulse 1.8s ease infinite;
+      flex-shrink: 0;
     }
 
     @keyframes pulse {
@@ -193,6 +212,23 @@
       animation: fadeUp 0.7s ease both;
     }
 
+    /* ─── OFFLINE BANNER ────────────────────────────────────────── */
+    .offline-banner {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: var(--r-md);
+      padding: 10px 16px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: #fca5a5;
+      font-family: var(--font-mono);
+    }
+    .offline-banner.show { display: flex; }
+    .offline-banner svg { flex-shrink: 0; }
+
     /* ─── SESSION CONTROLS ──────────────────────────────────────── */
     .session-controls {
       display: flex;
@@ -220,7 +256,11 @@
       border-radius: 50%;
       background: var(--lime);
       animation: pulse 2s ease infinite;
+      flex-shrink: 0;
     }
+    .session-indicator.error { background: var(--red-card); animation: none; }
+
+    .session-actions { display: flex; gap: 8px; align-items: center; }
 
     .new-session-btn {
       background: var(--white-08);
@@ -234,12 +274,16 @@
       transition: all 0.2s;
       text-transform: uppercase;
       letter-spacing: 0.05em;
+      min-height: 28px;
     }
-
     .new-session-btn:hover {
       background: var(--white-15);
       color: var(--lime-bright);
       border-color: rgba(132,204,22,0.3);
+    }
+    .new-session-btn:focus-visible {
+      outline: 2px solid var(--lime);
+      outline-offset: 2px;
     }
 
     /* ─── PITCH DIVIDER ─────────────────────────────────────────── */
@@ -277,6 +321,7 @@
       padding: 4px 2px 16px;
       scrollbar-width: thin;
       scrollbar-color: var(--white-15) transparent;
+      scroll-behavior: smooth;
     }
 
     .messages::-webkit-scrollbar { width: 4px; }
@@ -324,7 +369,8 @@
       background: var(--white-08);
       border: 1px solid var(--border);
       border-radius: 100px;
-      padding: 8px 18px;
+      padding: 10px 18px;
+      min-height: 44px;
       font-size: 12px;
       color: var(--white-70);
       font-family: var(--font-body);
@@ -338,6 +384,11 @@
       border-color: rgba(132,204,22,0.3);
       color: var(--lime-bright);
       transform: translateY(-1px);
+    }
+
+    .suggestion-btn:focus-visible {
+      outline: 2px solid var(--lime);
+      outline-offset: 2px;
     }
 
     /* message bubbles */
@@ -357,6 +408,7 @@
       font-size: 14px;
       font-weight: 600;
       margin-top: 2px;
+      aria-hidden: true;
     }
 
     .msg.user .msg-avatar {
@@ -374,7 +426,6 @@
     }
 
     .msg-body { flex: 1; max-width: calc(100% - 48px); }
-
     .msg.user .msg-body { align-items: flex-end; display: flex; flex-direction: column; }
 
     .msg-bubble {
@@ -410,38 +461,53 @@
     .msg.ai .msg-meta { padding-left: 2px; }
     .msg.user .msg-meta { padding-right: 2px; flex-direction: row-reverse; }
 
-    /* context badge */
-    .context-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: rgba(163,230,53,0.1);
-      border: 1px solid rgba(163,230,53,0.2);
-      border-radius: 100px;
-      padding: 2px 8px;
-      font-size: 9px;
-      color: var(--lime-bright);
-      font-family: var(--font-mono);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
+
 
     /* ─── AI ANSWER FORMATTING ──────────────────────────────────── */
     .ai-answer { white-space: pre-wrap; }
 
-    .ai-answer .law-tag {
-      display: inline-block;
-      background: rgba(132,204,22,0.12);
-      border: 1px solid rgba(132,204,22,0.25);
-      color: var(--lime-bright);
-      font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: 0.1em;
-      padding: 2px 8px;
-      border-radius: 4px;
-      margin-right: 6px;
-      text-transform: uppercase;
+    /* ─── MESSAGE ACTIONS (copy / feedback) ─────────────────────── */
+    .msg-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      opacity: 0;
+      transition: opacity 0.2s;
     }
+
+    .msg:hover .msg-actions { opacity: 1; }
+    .msg-actions:focus-within { opacity: 1; }
+
+    .action-btn {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: var(--white-08);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 4px 10px;
+      font-size: 10px;
+      font-family: var(--font-mono);
+      color: var(--white-40);
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.05em;
+      min-height: 28px;
+    }
+
+    .action-btn:hover {
+      background: var(--white-15);
+      color: var(--line-white);
+      border-color: var(--white-15);
+    }
+
+    .action-btn:focus-visible {
+      outline: 2px solid var(--lime);
+      outline-offset: 2px;
+    }
+
+    .action-btn.positive:hover { color: var(--lime-bright); border-color: rgba(132,204,22,0.4); }
+    .action-btn.negative:hover { color: var(--red-card); border-color: rgba(239,68,68,0.4); }
+    .action-btn.copied { color: var(--lime-bright); border-color: rgba(132,204,22,0.4); background: rgba(132,204,22,0.08); }
 
     /* ─── EVIDENCE ACCORDION ────────────────────────────────────── */
     .evidence-toggle {
@@ -451,20 +517,21 @@
       font-family: var(--font-mono);
       cursor: pointer;
       background: none; border: none;
-      padding: 0;
+      padding: 4px 0;
       margin-top: 10px;
       transition: opacity 0.2s;
       letter-spacing: 0.06em;
       text-transform: uppercase;
+      min-height: 28px;
     }
 
     .evidence-toggle:hover { opacity: 0.7; }
+    .evidence-toggle:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; border-radius: 3px; }
 
     .evidence-toggle .chevron {
       transition: transform 0.25s;
       font-size: 10px;
     }
-
     .evidence-toggle.open .chevron { transform: rotate(180deg); }
 
     .evidence-panel {
@@ -473,7 +540,6 @@
       flex-direction: column;
       gap: 8px;
     }
-
     .evidence-panel.open { display: flex; }
 
     .evidence-item {
@@ -516,7 +582,6 @@
       background: var(--lime);
       animation: typing-bounce 1.2s ease infinite;
     }
-
     .typing-dot:nth-child(2) { animation-delay: 0.2s; }
     .typing-dot:nth-child(3) { animation-delay: 0.4s; }
 
@@ -525,12 +590,40 @@
       30% { transform: translateY(-6px); opacity: 1; }
     }
 
+    /* ─── RETRY UI ───────────────────────────────────────────────── */
+    .retry-bubble {
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.2);
+      border-radius: var(--r-md);
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #fca5a5;
+    }
+
+    .retry-btn {
+      background: rgba(239,68,68,0.15);
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: 100px;
+      color: #fca5a5;
+      padding: 4px 12px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      min-height: 32px;
+    }
+    .retry-btn:hover { background: rgba(239,68,68,0.25); }
+    .retry-btn:focus-visible { outline: 2px solid #fca5a5; outline-offset: 2px; }
+
     /* ─── INPUT AREA ────────────────────────────────────────────── */
     .input-area {
       display: flex;
       flex-direction: column;
       gap: 12px;
       padding-top: 8px;
+      padding-bottom: calc(8px + var(--safe-bottom));
     }
 
     .input-shell {
@@ -565,11 +658,10 @@
     }
 
     #question-input::-webkit-scrollbar { display: none; }
-
     #question-input::placeholder { color: var(--white-40); }
 
     .send-btn {
-      width: 38px; height: 38px; flex-shrink: 0;
+      width: 44px; height: 44px; flex-shrink: 0;
       background: linear-gradient(135deg, var(--lime) 0%, #16a34a 100%);
       border: none; border-radius: 50%;
       cursor: pointer;
@@ -578,9 +670,10 @@
       color: var(--pitch-dark);
     }
 
-    .send-btn:hover { transform: scale(1.07); box-shadow: 0 4px 20px rgba(132,204,22,0.4); }
-    .send-btn:active { transform: scale(0.95); }
-    .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+    .send-btn:hover:not(:disabled) { transform: scale(1.07); box-shadow: 0 4px 20px rgba(132,204,22,0.4); }
+    .send-btn:active:not(:disabled) { transform: scale(0.95); }
+    .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .send-btn:focus-visible { outline: 2px solid var(--lime-bright); outline-offset: 3px; }
 
     .input-footer {
       display: flex;
@@ -596,6 +689,15 @@
       letter-spacing: 0.08em;
     }
 
+    .char-counter {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--white-40);
+      transition: color 0.2s;
+    }
+    .char-counter.warn { color: var(--amber); }
+    .char-counter.over { color: var(--red-card); }
+
     .kbd {
       display: inline-block;
       background: var(--white-08);
@@ -607,7 +709,8 @@
 
     /* ─── FOOTER ────────────────────────────────────────────────── */
     footer {
-      padding: 0 24px 28px;
+      padding: 0 24px;
+      padding-bottom: calc(28px + var(--safe-bottom));
       margin-top: 16px;
     }
 
@@ -640,6 +743,7 @@
       transition: color 0.2s;
     }
     .footer-copy a:hover { color: var(--white-70); }
+    .footer-copy a:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; border-radius: 2px; }
 
     .footer-brand {
       display: flex;
@@ -649,6 +753,7 @@
       transition: opacity 0.2s;
     }
     .footer-brand:hover { opacity: 0.75; }
+    .footer-brand:focus-visible { outline: 2px solid var(--lime); outline-offset: 4px; border-radius: 4px; }
 
     .footer-brand-label {
       display: flex;
@@ -683,16 +788,11 @@
       flex-shrink: 0;
     }
 
-    .footer-brand-mark svg {
-      width: 18px;
-      height: 18px;
-      color: var(--lime);
-    }
-
     /* ─── TOAST ─────────────────────────────────────────────────── */
     .toast {
       position: fixed;
-      bottom: 24px; right: 24px;
+      bottom: calc(24px + var(--safe-bottom));
+      right: 24px;
       background: var(--pitch-light);
       border: 1px solid var(--border);
       border-radius: var(--r-md);
@@ -706,33 +806,19 @@
       max-width: 320px;
       backdrop-filter: blur(16px);
     }
-
     .toast.show { transform: translateY(0); opacity: 1; }
     .toast.error { border-color: rgba(239,68,68,0.4); }
+    .toast.success { border-color: rgba(132,204,22,0.4); }
 
     /* ─── ANIMATIONS ────────────────────────────────────────────── */
     @keyframes fadeDown {
       from { opacity: 0; transform: translateY(-16px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(16px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-
-    /* ─── SCROLLBAR FOR MESSAGES ────────────────────────────────── */
-    .messages { scroll-behavior: smooth; }
-
-    /* ─── PROCESSING TIME BADGE ─────────────────────────────────── */
-    .perf-badge {
-      display: inline-flex; align-items: center; gap: 4px;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--white-40);
-    }
-
-    .perf-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--lime); opacity: 0.6; }
 
     /* ─── STAT COUNTER BUMP ─────────────────────────────────────── */
     @keyframes statBump {
@@ -741,6 +827,45 @@
       100% { transform: scale(1);    color: var(--line-white); }
     }
     .stat-bump { animation: statBump 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+    /* ─── PERFORMANCE BADGE ─────────────────────────────────────── */
+    .perf-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--white-40);
+    }
+    .perf-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--lime); opacity: 0.6; }
+
+    /* ─── PITCH HALF-CIRCLE DECORATION ─────────────────────────── */
+    .pitch-arc {
+      position: fixed;
+      bottom: -200px; left: 50%;
+      transform: translateX(-50%);
+      width: 700px; height: 400px;
+      border: 1px solid rgba(232,245,234,0.04);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ─── CORNER FLAGS ──────────────────────────────────────────── */
+    .corner-flag {
+      position: fixed;
+      z-index: 0;
+      opacity: 0.06;
+      pointer-events: none;
+    }
+    .corner-flag.tl { top: 0; left: 0; }
+    .corner-flag.tr { top: 0; right: 0; }
+
+    /* ─── REDUCED MOTION ────────────────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
 
     /* ─── MOBILE ────────────────────────────────────────────────── */
     @media (max-width: 640px) {
@@ -755,8 +880,8 @@
       .msg-bubble { font-size: 13px; padding: 12px 14px; max-width: 100%; }
       .msg-avatar { width: 28px; height: 28px; font-size: 11px; }
       .input-shell { padding: 10px 12px; border-radius: 14px; }
-      #question-input { font-size: 14px; }
-      .send-btn { width: 34px; height: 34px; }
+      #question-input { font-size: 16px; } /* Prevents iOS zoom on focus */
+      .send-btn { width: 44px; height: 44px; } /* Maintain tap target */
       .input-footer { flex-direction: column; align-items: flex-start; gap: 8px; }
       .input-hint { align-self: flex-end; }
       .footer-inner { flex-direction: column; align-items: center; text-align: center; gap: 14px; }
@@ -764,47 +889,25 @@
       .corner-flag { display: none; }
       .pitch-arc { width: 360px; height: 200px; bottom: -100px; }
     }
-
-    /* ─── PITCH HALF-CIRCLE DECORATION ─────────────────────────── */
-    .pitch-arc {
-      position: fixed;
-      bottom: -200px; left: 50%;
-      transform: translateX(-50%);
-      width: 700px; height: 400px;
-      border: 1px solid rgba(232,245,234,0.04);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    /* ─── CORNER FLAG ───────────────────────────────────────────── */
-    .corner-flag {
-      position: fixed;
-      z-index: 0;
-      opacity: 0.06;
-      pointer-events: none;
-    }
-    .corner-flag.tl { top: 0; left: 0; }
-    .corner-flag.tr { top: 0; right: 0; }
-    .corner-flag svg { width: 120px; height: 120px; }
   </style>
 </head>
 <body>
 
-  <!-- decorative pitch elements -->
-  <div class="pitch-bg"></div>
-  <div class="pitch-lines"></div>
-  <div class="grain"></div>
-  <div class="pitch-arc"></div>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
 
-  <!-- corner flag decorations -->
-  <div class="corner-flag tl">
+  <!-- decorative pitch elements -->
+  <div class="pitch-bg" aria-hidden="true"></div>
+  <div class="pitch-lines" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="pitch-arc" aria-hidden="true"></div>
+
+  <div class="corner-flag tl" aria-hidden="true">
     <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M0 0 L80 0 L80 4 L4 4 L4 80 L0 80 Z" fill="white"/>
       <circle cx="4" cy="4" r="20" stroke="white" stroke-width="1.5" fill="none"/>
     </svg>
   </div>
-  <div class="corner-flag tr" style="transform: scaleX(-1)">
+  <div class="corner-flag tr" style="transform: scaleX(-1)" aria-hidden="true">
     <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M0 0 L80 0 L80 4 L4 4 L4 80 L0 80 Z" fill="white"/>
       <circle cx="4" cy="4" r="20" stroke="white" stroke-width="1.5" fill="none"/>
@@ -814,17 +917,17 @@
   <div class="app">
 
     <!-- HERO -->
-    <header class="hero">
-      <div class="badge">
-        <div class="badge-dot"></div>
-        <span>AI-Powered · Official IFAB Rules · Context-Aware</span>
+    <header class="hero" role="banner">
+      <div class="badge" aria-label="AI-Powered Laws of the Game assistant">
+        <div class="badge-dot" aria-hidden="true"></div>
+        <span>AI-Powered · Official IFAB Rules · Instant Answers</span>
       </div>
       <h1>FOOTBALL<br><span class="accent">LAW</span></h1>
-      <p class="hero-sub">Ask any question about the Laws of the Game — powered by AI with context awareness</p>
+      <p class="hero-sub">Ask any question about the Laws of the Game — powered by AI</p>
 
-      <div class="stats-row" id="stats-row">
+      <div class="stats-row" id="stats-row" aria-label="Session statistics">
         <div class="stat">
-          <span class="stat-val" id="stat-session">0</span>
+          <span class="stat-val" id="stat-session" aria-live="polite" aria-label="Questions asked this session">0</span>
           <span class="stat-label">Asked This Session</span>
         </div>
         <div class="stat">
@@ -836,40 +939,68 @@
           <span class="stat-label">All-Time Questions</span>
         </div>
         <div class="stat">
-          <span class="stat-val">✓</span>
+          <span class="stat-val" aria-hidden="true">✓</span>
           <span class="stat-label">Instant Answers</span>
         </div>
       </div>
     </header>
 
     <!-- MAIN CHAT -->
-    <main class="chat-wrapper">
+    <main class="chat-wrapper" id="main-content">
 
-      <!-- Session controls -->
-      <div class="session-controls">
-        <div class="session-info">
-          <div class="session-indicator"></div>
-          <span id="session-status">Session Active</span>
-        </div>
-        <button class="new-session-btn" onclick="createNewSession()">New Conversation</button>
+      <!-- Offline banner -->
+      <div class="offline-banner" id="offline-banner" role="alert" aria-live="assertive">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <circle cx="8" cy="8" r="7" stroke="#fca5a5" stroke-width="1.5"/>
+          <path d="M8 4.5v4M8 10.5v1" stroke="#fca5a5" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span>You appear to be offline. Answers may not load until your connection is restored.</span>
       </div>
 
-      <div class="pitch-divider">
+      <!-- Session controls -->
+      <div class="session-controls" role="region" aria-label="Session controls">
+        <div class="session-info">
+          <div class="session-indicator" id="session-indicator" aria-hidden="true"></div>
+          <span id="session-status">Session Active</span>
+        </div>
+        <div class="session-actions">
+          <button class="new-session-btn" onclick="createNewSession()" aria-label="Start a new conversation">
+            New Conversation
+          </button>
+        </div>
+      </div>
+
+      <div class="pitch-divider" aria-hidden="true">
         <span>KICK OFF</span>
       </div>
 
+      <!-- Live region for screen reader announcements -->
+      <div
+        id="sr-announcer"
+        aria-live="polite"
+        aria-atomic="true"
+        style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;"
+      ></div>
+
       <!-- messages -->
-      <div class="messages" id="messages">
+      <div
+        class="messages"
+        id="messages"
+        role="log"
+        aria-label="Conversation"
+        aria-live="polite"
+        aria-relevant="additions"
+      >
         <!-- empty state -->
         <div class="empty-state" id="empty-state">
-          <svg class="ball-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg class="ball-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <circle cx="32" cy="32" r="30" stroke="white" stroke-width="2"/>
             <path d="M32 2 L32 12 M32 52 L32 62 M2 32 L12 32 M52 32 L62 32" stroke="white" stroke-width="1.5"/>
             <circle cx="32" cy="32" r="8" fill="white"/>
             <path d="M32 2 C20 8 16 20 22 32 C16 44 20 56 32 62 C44 56 48 44 42 32 C48 20 44 8 32 2Z" stroke="white" stroke-width="1.5" fill="none"/>
           </svg>
-          <p>No questions yet. Ask about offside, handball, penalties, red cards, restarts — anything from the Laws of the Game. Your conversation is tracked for context-aware follow-ups!</p>
-          <div class="suggestions" id="suggestions">
+          <p>No questions yet. Ask about offside, handball, penalties, red cards, restarts — anything from the Laws of the Game.</p>
+          <div class="suggestions" id="suggestions" role="group" aria-label="Suggested questions">
             <button class="suggestion-btn" onclick="useSuggestion(this)">What is the handball rule?</button>
             <button class="suggestion-btn" onclick="useSuggestion(this)">When is a penalty awarded?</button>
             <button class="suggestion-btn" onclick="useSuggestion(this)">Can a goalkeeper score from a goal kick?</button>
@@ -881,43 +1012,60 @@
       </div>
 
       <!-- input -->
-      <div class="input-area">
+      <div class="input-area" role="region" aria-label="Send a question">
         <div class="input-shell">
+          <label for="question-input" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">
+            Ask about a football law
+          </label>
           <textarea
             id="question-input"
-            placeholder="Ask about any football law… (context-aware)"
+            placeholder="Ask about any football law…"
             rows="1"
             onkeydown="handleKeyDown(event)"
-            oninput="autoResize(this)"
+            oninput="handleInput(this)"
+            maxlength="1000"
+            aria-label="Ask about a football law"
+            aria-describedby="input-hint-text"
           ></textarea>
-          <button class="send-btn" id="send-btn" onclick="handleSendButton()" title="Send (Enter)">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <button
+            class="send-btn"
+            id="send-btn"
+            onclick="handleSendButton()"
+            aria-label="Send question"
+            title="Send (Enter)"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
               <path d="M14.5 8L1.5 1.5L4 8L1.5 14.5L14.5 8Z"/>
             </svg>
           </button>
         </div>
 
         <div class="input-footer">
-          <div class="input-hint">
+          <div class="input-hint" id="input-hint-text">
             <span class="kbd">Enter</span> send &nbsp; <span class="kbd">Shift+Enter</span> newline
           </div>
+          <div class="char-counter" id="char-counter" aria-live="polite" aria-label="Character count">0 / 1000</div>
         </div>
       </div>
 
     </main>
 
-    <footer>
+    <footer role="contentinfo">
       <div class="footer-rule"></div>
       <div class="footer-inner">
         <div class="footer-copy">
-          FootballLaw AI &nbsp;·&nbsp; <a href="https://www.theifab.com/laws-edition/2024-25/guidelines-and-notes/guidelines-for-match-officials/" target="_blank" rel="noopener">IFAB Laws of the Game</a> &nbsp;·&nbsp; RAG v2.5 (Context-Aware)
+          FootballLaw AI &nbsp;·&nbsp;
+          <a href="https://www.theifab.com/laws-edition/2024-25/guidelines-and-notes/guidelines-for-match-officials/" target="_blank" rel="noopener noreferrer">
+            IFAB Laws of the Game
+          </a>
+          &nbsp;·&nbsp; RAG v2.5
         </div>
-        <a class="footer-brand" href="https://firswoodintelligence.com" target="_blank" rel="noopener" title="Visit Firswood Intelligence">
+        <a class="footer-brand" href="https://firswoodintelligence.com" target="_blank" rel="noopener noreferrer" title="Visit Firswood Intelligence">
           <div class="footer-brand-label">
             <span class="footer-brand-built">Built by</span>
             <span class="footer-brand-name">FIRSWOOD INTELLIGENCE</span>
           </div>
-          <div class="footer-brand-mark">
+          <div class="footer-brand-mark" aria-hidden="true">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="3" width="18" height="18" rx="5" ry="5"></rect>
               <path d="M12 17V7"></path>
@@ -932,146 +1080,238 @@
   </div>
 
   <!-- toast -->
-  <div class="toast" id="toast"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
+    // ─── CONFIG ───────────────────────────────────────────────────
+    const MAX_RETRIES = 2;
+    const RETRY_BASE_DELAY = 1000;
+    const MAX_CHARS = 1000;
+    const STATS_POLL_INTERVAL = 60000; // 1 minute
+
+    const API_BASE = (() => {
+      const h = window.location.hostname;
+      return (h === 'localhost' || h === '127.0.0.1')
+        ? 'http://localhost:8000'
+        : 'https://fcrules.vercel.app';
+    })();
+
     // ─── STATE ────────────────────────────────────────────────────
     let isLoading = false;
-    let showEvidence = true;
-    let includeRawChunks = false;
     let sessionQuestions = 0;
     let currentAbortController = null;
     let currentSessionId = null;
-    // Auto-detect environment: use localhost for development, vercel for production
-    const API_BASE = () => window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-      ? 'http://localhost:8000' 
-      : 'https://fcrules.vercel.app';
+    let lastFailedQuestion = null;
+    let statsTimer = null;
+    const msgRegistry = {}; // Stores { answer, question } keyed by msgId
+
+    // ─── ONLINE/OFFLINE DETECTION ─────────────────────────────────
+    function updateOnlineStatus() {
+      const banner = document.getElementById('offline-banner');
+      if (!navigator.onLine) {
+        banner.classList.add('show');
+      } else {
+        banner.classList.remove('show');
+      }
+    }
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
 
     // ─── SESSION MANAGEMENT ───────────────────────────────────────
-    async function initializeSession() {
-      // Check if we have a stored session ID
-      currentSessionId = localStorage.getItem('football_law_session_id');
-      
-      if (!currentSessionId) {
-        // Create new session
-        await createNewSession();
-      } else {
-        // Validate existing session
-        try {
-          const r = await fetch(`${API_BASE()}/session/${currentSessionId}`, { 
-            signal: AbortSignal.timeout(4000) 
-          });
-          if (!r.ok) {
-            // Session expired, create new one
-            await createNewSession();
-          } else {
-            updateSessionStatus('active');
-          }
-        } catch (e) {
-          // Error validating, create new session
-          await createNewSession();
-        }
+    function getSavedSessionId() {
+      try {
+        return localStorage.getItem('football_law_session_id');
+      } catch (e) {
+        return null; // Private browsing or storage blocked
       }
+    }
+
+    function saveSessionId(id) {
+      try {
+        localStorage.setItem('football_law_session_id', id);
+      } catch (e) {
+        // Storage blocked — session will be in-memory only
+      }
+    }
+
+    async function initializeSession() {
+      currentSessionId = getSavedSessionId();
+
+      if (!currentSessionId) {
+        currentSessionId = await createSessionOnServer();
+        if (currentSessionId) saveSessionId(currentSessionId);
+        else currentSessionId = generateUUID(); // Fallback: client UUID
+        return;
+      }
+
+      // Validate existing session — timeout aggressively, fail silently
+      try {
+        const r = await fetchWithTimeout(`${API_BASE}/session/${currentSessionId}`, {}, 3000);
+        if (!r.ok) {
+          currentSessionId = await createSessionOnServer() || generateUUID();
+          saveSessionId(currentSessionId);
+        }
+      } catch {
+        // Network down or slow — keep existing ID and move on
+      }
+      updateSessionIndicator('active');
+    }
+
+    // Returns the new session_id string, or null on failure
+    async function createSessionOnServer() {
+      try {
+        const r = await fetchWithTimeout(`${API_BASE}/session/new`, { method: 'POST' }, 3000);
+        if (r.ok) {
+          const d = await r.json();
+          updateSessionIndicator('active');
+          return d.session_id;
+        }
+      } catch {}
+      updateSessionIndicator('active'); // still show active — we'll use a client UUID
+      return null;
     }
 
     async function createNewSession() {
-      try {
-        const r = await fetch(`${API_BASE()}/session/new`, {
-          method: 'POST',
-          signal: AbortSignal.timeout(4000)
-        });
-        
-        if (r.ok) {
-          const data = await r.json();
-          currentSessionId = data.session_id;
-          localStorage.setItem('football_law_session_id', currentSessionId);
-          updateSessionStatus('active');
-          
-          // Clear messages
-          const messages = document.getElementById('messages');
-          messages.innerHTML = `
-            <div class="empty-state" id="empty-state">
-              <svg class="ball-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="32" cy="32" r="30" stroke="white" stroke-width="2"/>
-                <path d="M32 2 L32 12 M32 52 L32 62 M2 32 L12 32 M52 32 L62 32" stroke="white" stroke-width="1.5"/>
-                <circle cx="32" cy="32" r="8" fill="white"/>
-                <path d="M32 2 C20 8 16 20 22 32 C16 44 20 56 32 62 C44 56 48 44 42 32 C48 20 44 8 32 2Z" stroke="white" stroke-width="1.5" fill="none"/>
-              </svg>
-              <p>New conversation started! Ask about offside, handball, penalties, red cards, restarts — anything from the Laws of the Game.</p>
-              <div class="suggestions" id="suggestions">
-                <button class="suggestion-btn" onclick="useSuggestion(this)">What is the handball rule?</button>
-                <button class="suggestion-btn" onclick="useSuggestion(this)">When is a penalty awarded?</button>
-                <button class="suggestion-btn" onclick="useSuggestion(this)">Can a goalkeeper score from a goal kick?</button>
-                <button class="suggestion-btn" onclick="useSuggestion(this)">What counts as offside?</button>
-                <button class="suggestion-btn" onclick="useSuggestion(this)">When is a dropped ball used?</button>
-                <button class="suggestion-btn" onclick="useSuggestion(this)">What is a red card offence?</button>
-              </div>
-            </div>
-          `;
-          
-          // Reset session counter
-          sessionQuestions = 0;
-          document.getElementById('stat-session').textContent = '0';
-          
-          showToast('New conversation started');
-        }
-      } catch (e) {
-        console.error('Failed to create session:', e);
-        updateSessionStatus('error');
-      }
+      // This one is user-triggered — show toast and reset UI
+      const id = await createSessionOnServer();
+      currentSessionId = id || generateUUID();
+      saveSessionId(currentSessionId);
+      resetChatUI();
+      showToast('New conversation started', 'success');
     }
 
-    function updateSessionStatus(status) {
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const r = Math.random() * 16 | 0;
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+      });
+    }
+
+    function resetChatUI() {
+      sessionQuestions = 0;
+      document.getElementById('stat-session').textContent = '0';
+      const messages = document.getElementById('messages');
+      messages.innerHTML = buildEmptyStateHTML('New conversation started. Ask about offside, handball, penalties, red cards, restarts — anything from the Laws of the Game.');
+    }
+
+    function updateSessionIndicator(status) {
+      const indicator = document.getElementById('session-indicator');
       const statusEl = document.getElementById('session-status');
       if (status === 'active') {
+        indicator.className = 'session-indicator';
         statusEl.textContent = 'Session Active';
-      } else if (status === 'error') {
+      } else {
+        indicator.className = 'session-indicator error';
         statusEl.textContent = 'Session Error';
       }
     }
 
+    function buildEmptyStateHTML(msg) {
+      return `
+        <div class="empty-state" id="empty-state">
+          <svg class="ball-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="32" cy="32" r="30" stroke="white" stroke-width="2"/>
+            <path d="M32 2 L32 12 M32 52 L32 62 M2 32 L12 32 M52 32 L62 32" stroke="white" stroke-width="1.5"/>
+            <circle cx="32" cy="32" r="8" fill="white"/>
+            <path d="M32 2 C20 8 16 20 22 32 C16 44 20 56 32 62 C44 56 48 44 42 32 C48 20 44 8 32 2Z" stroke="white" stroke-width="1.5" fill="none"/>
+          </svg>
+          <p>${escHtml(msg)}</p>
+          <div class="suggestions" id="suggestions" role="group" aria-label="Suggested questions">
+            <button class="suggestion-btn" onclick="useSuggestion(this)">What is the handball rule?</button>
+            <button class="suggestion-btn" onclick="useSuggestion(this)">When is a penalty awarded?</button>
+            <button class="suggestion-btn" onclick="useSuggestion(this)">Can a goalkeeper score from a goal kick?</button>
+            <button class="suggestion-btn" onclick="useSuggestion(this)">What counts as offside?</button>
+            <button class="suggestion-btn" onclick="useSuggestion(this)">When is a dropped ball used?</button>
+            <button class="suggestion-btn" onclick="useSuggestion(this)">What is a red card offence?</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // ─── FETCH WITH TIMEOUT ───────────────────────────────────────
+    // Creates its own controller — used only for non-ask utility calls
+    function fetchWithTimeout(url, options = {}, timeoutMs = 5000) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
+      return fetch(url, { ...options, signal: controller.signal })
+        .finally(() => clearTimeout(timer));
+    }
+
+    // ─── FETCH WITH RETRY ─────────────────────────────────────────
+    // Used ONLY for the /ask call. Receives an external AbortSignal so the
+    // stop button still works. Does NOT create its own AbortController.
+    async function fetchWithRetry(url, options, externalSignal, retries = MAX_RETRIES) {
+      for (let attempt = 0; attempt <= retries; attempt++) {
+        // If user already aborted, bail immediately
+        if (externalSignal?.aborted) throw new DOMException('Aborted', 'AbortError');
+        try {
+          const r = await fetch(url, { ...options, signal: externalSignal });
+          if (r.status === 429) {
+            const retryAfter = parseInt(r.headers.get('Retry-After') || '5', 10);
+            showToast(`Rate limited — retrying in ${retryAfter}s`, 'error');
+            await sleep(retryAfter * 1000);
+            continue;
+          }
+          return r;
+        } catch (err) {
+          if (err.name === 'AbortError') throw err; // Never retry user-initiated stop
+          if (attempt === retries) throw err;
+          const delay = RETRY_BASE_DELAY * Math.pow(2, attempt);
+          showToast(`Connection issue — retrying (${attempt + 1}/${retries})…`);
+          await sleep(delay);
+        }
+      }
+    }
+
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
     // ─── BOOT ─────────────────────────────────────────────────────
-    window.addEventListener('DOMContentLoaded', async () => {
-      await initializeSession();
+    // Session init is fire-and-forget — it must never block the UI from
+    // becoming interactive. sendQuestion() handles a null sessionId gracefully.
+    window.addEventListener('DOMContentLoaded', () => {
+      updateOnlineStatus();
+      // Non-blocking: session & stats run in background
+      initializeSession().catch(() => {});
       fetchStats();
+      statsTimer = setInterval(fetchStats, STATS_POLL_INTERVAL);
       const input = document.getElementById('question-input');
       autoResize(input);
-      
-      input.addEventListener('focus', () => {
-        setTimeout(() => {
-          input.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 300);
-      });
     });
 
+    // ─── STATS ─────────────────────────────────────────────────────────────────
     async function fetchStats() {
       try {
-        const r = await fetch(`${API_BASE()}/stats`, { signal: AbortSignal.timeout(4000) });
+        // /stats is a cold serverless call — needs generous timeout
+        const r = await fetchWithTimeout(`${API_BASE}/stats`, {}, 25000);
         if (!r.ok) return;
         const d = await r.json();
-        document.getElementById('stat-laws').textContent = d.unique_laws?.length ?? '—';
 
-        const allTime = d.all_time_queries ?? d.total_queries_processed ?? null;
-        if (allTime !== null) {
+        // Laws covered — only set once
+        const lawsEl = document.getElementById('stat-laws');
+        if (d.unique_laws?.length) {
+          lawsEl.textContent = d.unique_laws.length;
+        }
+
+        // All-time query counter — field name from your API is total_queries_processed
+        const allTime = d.total_queries_processed ?? d.all_time_queries ?? null;
+        if (allTime !== null && allTime > 0) {
           animateCounter('stat-queries', allTime);
         }
-      } catch (_) {
-        // API not connected
+      } catch (e) {
+        console.warn('Stats fetch failed:', e?.message);
       }
     }
 
     function animateCounter(id, target) {
       const el = document.getElementById(id);
-      const current = parseInt(el.textContent.replace(/,/g, '')) || 0;
+      const current = parseInt(String(el.textContent).replace(/,/g, '')) || 0;
       if (current === target) { el.textContent = target.toLocaleString(); return; }
       const duration = 900;
       const start = performance.now();
-      const from = current;
       function tick(now) {
         const p = Math.min((now - start) / duration, 1);
         const eased = 1 - Math.pow(1 - p, 3);
-        const val = Math.round(from + (target - from) * eased);
-        el.textContent = val.toLocaleString();
+        el.textContent = Math.round(current + (target - current) * eased).toLocaleString();
         if (p < 1) requestAnimationFrame(tick);
         else el.textContent = target.toLocaleString();
       }
@@ -1090,8 +1330,9 @@
     // ─── SUGGESTION ───────────────────────────────────────────────
     function useSuggestion(btn) {
       const input = document.getElementById('question-input');
-      input.value = btn.textContent;
+      input.value = btn.textContent.trim();
       autoResize(input);
+      updateCharCounter(input);
       sendQuestion();
     }
 
@@ -1099,6 +1340,20 @@
     function autoResize(el) {
       el.style.height = 'auto';
       el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+    }
+
+    function updateCharCounter(el) {
+      const counter = document.getElementById('char-counter');
+      const len = el.value.length;
+      counter.textContent = `${len} / ${MAX_CHARS}`;
+      counter.className = 'char-counter';
+      if (len > MAX_CHARS * 0.9) counter.classList.add('warn');
+      if (len >= MAX_CHARS) counter.classList.add('over');
+    }
+
+    function handleInput(el) {
+      autoResize(el);
+      updateCharCounter(el);
     }
 
     function handleKeyDown(e) {
@@ -1115,11 +1370,16 @@
       const question = input.value.trim();
       if (!question) return;
 
+      // Remove empty state
       document.getElementById('empty-state')?.remove();
+
+      lastFailedQuestion = question;
       input.value = '';
       autoResize(input);
+      updateCharCounter(input);
+      input.focus();
 
-      addMessage('user', question);
+      addUserMessage(question);
       incrementSessionCounter();
       setLoading(true);
 
@@ -1127,25 +1387,18 @@
       currentAbortController = new AbortController();
 
       try {
-        const headers = {
-          'Content-Type': 'application/json'
-        };
-        
-        // Add session ID to headers
-        if (currentSessionId) {
-          headers['X-Session-ID'] = currentSessionId;
-        }
-
-        const res = await fetch(`${API_BASE()}/ask`, {
-          method: 'POST',
-          headers: headers,
-          body: JSON.stringify({
-            question,
-            top_k: 10,
-            include_raw_chunks: includeRawChunks
-          }),
-          signal: currentAbortController.signal
-        });
+        const res = await fetchWithRetry(
+          `${API_BASE}/ask`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(currentSessionId ? { 'X-Session-ID': currentSessionId } : {})
+            },
+            body: JSON.stringify({ question, top_k: 10, include_raw_chunks: false })
+          },
+          currentAbortController.signal   // ← passed as separate arg, not inside options
+        );
 
         removeTyping(typingId);
 
@@ -1155,21 +1408,19 @@
         }
 
         const data = await res.json();
-        
-        // Update session ID if returned
+
         if (data.session_id && data.session_id !== 'none') {
           currentSessionId = data.session_id;
-          localStorage.setItem('football_law_session_id', currentSessionId);
+          saveSessionId(currentSessionId);
         }
-        
-        addAIMessage(data);
-        fetchStats();
+
+        addAIMessage(data, question);
+        announce(`Answer received for: ${question}`);
 
       } catch (err) {
         removeTyping(typingId);
         if (err.name !== 'AbortError') {
-          addMessage('error', `⚠️ ${err.message || 'Could not connect to API.'}`);
-          showToast('Error: ' + (err.message || 'Could not reach API'), true);
+          addErrorMessage(err.message || 'Could not connect to the API.');
         }
       } finally {
         setLoading(false);
@@ -1177,67 +1428,67 @@
       }
     }
 
+    // ─── SCREEN READER ANNOUNCER ──────────────────────────────────
+    function announce(msg) {
+      const el = document.getElementById('sr-announcer');
+      el.textContent = '';
+      requestAnimationFrame(() => { el.textContent = msg; });
+    }
+
     // ─── BUILD USER BUBBLE ────────────────────────────────────────
-    function addMessage(type, text) {
+    function addUserMessage(text) {
       const messages = document.getElementById('messages');
+      const now = formatTime();
       const wrap = document.createElement('div');
-      wrap.className = `msg ${type === 'user' ? 'user' : 'ai'}`;
-
-      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-      if (type === 'user') {
-        wrap.innerHTML = `
-          <div class="msg-avatar">YOU</div>
-          <div class="msg-body">
-            <div class="msg-bubble">${escHtml(text)}</div>
-            <div class="msg-meta">${now}</div>
-          </div>`;
-      } else {
-        wrap.innerHTML = `
-          <div class="msg-avatar">⚽</div>
-          <div class="msg-body">
-            <div class="msg-bubble" style="color: var(--red-card)">${escHtml(text)}</div>
-            <div class="msg-meta">${now}</div>
-          </div>`;
-      }
+      wrap.className = 'msg user';
+      wrap.setAttribute('role', 'article');
+      wrap.setAttribute('aria-label', `You asked: ${text}`);
+      wrap.innerHTML = `
+        <div class="msg-avatar" aria-hidden="true">YOU</div>
+        <div class="msg-body">
+          <div class="msg-bubble">${escHtml(text)}</div>
+          <div class="msg-meta">
+            <time datetime="${new Date().toISOString()}">${now}</time>
+          </div>
+        </div>`;
       messages.appendChild(wrap);
       scrollBottom();
     }
 
     // ─── BUILD AI RESPONSE BUBBLE ─────────────────────────────────
-    function addAIMessage(data) {
+    function addAIMessage(data, question) {
       const messages = document.getElementById('messages');
-      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const now = formatTime();
       const ms = data.processing_time_ms ? Math.round(data.processing_time_ms) : null;
-
-      // Check if this was a follow-up question
-      const isFollowUp = data.retrieval_info?.is_follow_up || false;
-      const contextBadge = isFollowUp ? '<span class="context-badge">🔗 Context-Aware</span>' : '';
+      // Context badge intentionally removed — internal detail, not shown to users
 
       const wrap = document.createElement('div');
       wrap.className = 'msg ai';
+      wrap.setAttribute('role', 'article');
+      wrap.setAttribute('aria-label', 'Assistant answer');
       wrap.innerHTML = `
-        <div class="msg-avatar">⚽</div>
+        <div class="msg-avatar" aria-hidden="true">⚽</div>
         <div class="msg-body">
           <div class="msg-bubble">
-            ${contextBadge ? `<div style="margin-bottom:8px">${contextBadge}</div>` : ''}
-            <div class="ai-answer"></div>
+
+            <div class="ai-answer" aria-label="Answer content"></div>
           </div>
           <div class="msg-meta">
-            ${now}
-            ${ms ? `<span class="perf-badge"><span class="perf-dot"></span>${ms}ms</span>` : ''}
+            <time datetime="${new Date().toISOString()}">${now}</time>
+            ${ms ? `<span class="perf-badge" aria-label="${ms} milliseconds"><span class="perf-dot" aria-hidden="true"></span>${ms}ms</span>` : ''}
           </div>
+          <div class="msg-actions" role="group" aria-label="Message actions"></div>
         </div>`;
 
       messages.appendChild(wrap);
-      
-      requestAnimationFrame(() => {
-        wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
+      wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
       const answerDiv = wrap.querySelector('.ai-answer');
+      const actionsDiv = wrap.querySelector('.msg-actions');
+
       streamText(answerDiv, data.answer, () => {
-        if (showEvidence && data.evidence && data.evidence.length > 0) {
+        // Add evidence
+        if (data.evidence && data.evidence.length > 0) {
           const items = data.evidence.slice(0, 5).map(e => `
             <div class="evidence-item">
               <div class="evidence-cite">${escHtml(e.citation)}</div>
@@ -1246,77 +1497,149 @@
             </div>
           `).join('');
 
-          const evidenceHtml = `
-            <button class="evidence-toggle" onclick="toggleEvidence(this)">
-              <span>Sources (${data.evidence.length})</span>
-              <span class="chevron">▾</span>
-            </button>
-            <div class="evidence-panel">${items}</div>
-          `;
-          
           const bubble = wrap.querySelector('.msg-bubble');
-          bubble.insertAdjacentHTML('beforeend', evidenceHtml);
+          bubble.insertAdjacentHTML('beforeend', `
+            <button class="evidence-toggle" onclick="toggleEvidence(this)" aria-expanded="false" aria-controls="ev-${wrap.dataset.id}">
+              <span>Sources (${data.evidence.length})</span>
+              <span class="chevron" aria-hidden="true">▾</span>
+            </button>
+            <div class="evidence-panel" id="ev-${wrap.dataset.id}">${items}</div>
+          `);
         }
+
+        // Add action buttons — data stored in registry, not inline attributes
+        const msgId = 'msg-' + Date.now();
+        wrap.dataset.msgId = msgId;
+        msgRegistry[msgId] = { answer: data.answer, question };
+
+        actionsDiv.innerHTML = `
+          <button class="action-btn" onclick="copyMessage(this)" data-msg-id="${msgId}" aria-label="Copy answer to clipboard">
+            <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M2 8H1.5A.5.5 0 011 7.5v-6A.5.5 0 011.5 1h6a.5.5 0 01.5.5V2" stroke="currentColor" stroke-width="1.2"/></svg>
+            Copy
+          </button>
+          <button class="action-btn positive" onclick="sendFeedback(this,'positive')" data-msg-id="${msgId}" aria-label="This answer was helpful">
+            <svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><path d="M6 1l1.5 3h3l-2.5 2 1 3L6 7.5 3 9l1-3L1.5 4h3z"/></svg>
+            Helpful
+          </button>
+          <button class="action-btn negative" onclick="sendFeedback(this,'negative')" data-msg-id="${msgId}" aria-label="This answer was not helpful">
+            <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><circle cx="6" cy="6" r="5"/><path d="M4 4l4 4M8 4l-4 4"/></svg>
+            Not helpful
+          </button>
+        `;
       });
+    }
+
+    // ─── ERROR BUBBLE WITH RETRY ──────────────────────────────────
+    function addErrorMessage(msg) {
+      const messages = document.getElementById('messages');
+      const wrap = document.createElement('div');
+      wrap.className = 'msg ai';
+      wrap.setAttribute('role', 'article');
+      wrap.setAttribute('aria-label', 'Error message');
+      wrap.innerHTML = `
+        <div class="msg-avatar" aria-hidden="true">⚽</div>
+        <div class="msg-body">
+          <div class="retry-bubble" role="alert">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <circle cx="7" cy="7" r="6" stroke="#fca5a5" stroke-width="1.2"/>
+              <path d="M7 4v3.5M7 9.5v.5" stroke="#fca5a5" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+            <span>${escHtml(msg)}</span>
+            <button class="retry-btn" onclick="retryLastQuestion()" aria-label="Retry last question">
+              ↩ Retry
+            </button>
+          </div>
+        </div>`;
+      messages.appendChild(wrap);
+      scrollBottom();
+    }
+
+    // ─── RETRY LAST QUESTION ──────────────────────────────────────
+    function retryLastQuestion() {
+      if (!lastFailedQuestion) return;
+      const input = document.getElementById('question-input');
+      input.value = lastFailedQuestion;
+      autoResize(input);
+      updateCharCounter(input);
+      sendQuestion();
+    }
+
+    // ─── COPY MESSAGE ─────────────────────────────────────────────
+    async function copyMessage(btn) {
+      const msgId = btn.dataset.msgId;
+      const text = msgRegistry[msgId]?.answer || '';
+      try {
+        await navigator.clipboard.writeText(text);
+        const orig = btn.innerHTML;
+        btn.classList.add('copied');
+        btn.innerHTML = `<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Copied`;
+        setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2000);
+        announce('Answer copied to clipboard');
+      } catch {
+        showToast('Copy failed \u2014 please select the text manually', 'error');
+      }
+    }
+
+    // ─── FEEDBACK ─────────────────────────────────────────────────
+    function sendFeedback(btn, type) {
+      const msgId = btn.dataset.msgId;
+      const { question } = msgRegistry[msgId] || {};
+      const group = btn.closest('[role="group"]');
+      group.querySelectorAll('.action-btn.positive, .action-btn.negative').forEach(b => {
+        b.disabled = true;
+        b.style.opacity = '0.4';
+      });
+      btn.style.opacity = '1';
+      btn.style.color = type === 'positive' ? 'var(--lime-bright)' : 'var(--red-card)';
+      showToast(type === 'positive' ? 'Thanks for the feedback! \uD83D\uDC4D' : 'Noted \u2014 we\u2019ll work to improve.', 'success');
+      announce('Feedback submitted: ' + type);
+      fetch(API_BASE + '/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question, type, session_id: currentSessionId })
+      }).catch(() => {});
     }
 
     // ─── STREAM TEXT WITH TYPING EFFECT ───────────────────────────
     function streamText(element, text, onComplete) {
-      if (!text) {
-        if (onComplete) onComplete();
-        return;
-      }
-
+      if (!text) { if (onComplete) onComplete(); return; }
       let index = 0;
       const chunkSize = 5;
       const delay = 8;
-
       function addChunk() {
         if (index < text.length) {
           index += chunkSize;
-          const currentText = text.slice(0, index);
-          const formattedText = formatAnswer(currentText);
-          element.innerHTML = formattedText;
+          element.innerHTML = formatAnswer(text.slice(0, index));
           setTimeout(addChunk, delay);
         } else {
           element.innerHTML = formatAnswer(text);
           if (onComplete) onComplete();
         }
       }
-
       addChunk();
     }
 
     // ─── FORMAT ANSWER ────────────────────────────────────────────
+    // NOTE: escHtml is applied to raw text BEFORE formatting so all
+    // substitutions only inject controlled HTML — no XSS risk.
     function formatAnswer(text) {
       if (!text) return '';
       let out = escHtml(text);
-
-      // Convert markdown bold **text** to HTML
       out = out.replace(/\*\*(.+?)\*\*/g, '<strong style="color:var(--lime-bright);font-weight:600">$1</strong>');
-
-      // bold section headers
       out = out.replace(/^(\d+\))\s+(.+)$/gm, '<strong style="color:var(--lime-bright)">$1 $2</strong>');
-
-      // bold keywords
       out = out.replace(/(Decision|Restart|Discipline|Evidence):/g,
         '<strong style="color:var(--line-white);opacity:0.9">$1:</strong>');
-
-      // highlight card mentions
       out = out.replace(/\byellow card\b/gi, '<span style="color:var(--yellow-card);font-weight:600">Yellow Card</span>');
       out = out.replace(/\bred card\b/gi, '<span style="color:var(--red-card);font-weight:600">Red Card</span>');
-
-      // quote blocks
       out = out.replace(/&quot;([^&]+)&quot;/g, '<span style="font-style:italic;color:var(--white-70)">"$1"</span>');
-
       return out;
     }
 
     // ─── EVIDENCE TOGGLE ──────────────────────────────────────────
     function toggleEvidence(btn) {
-      btn.classList.toggle('open');
-      const panel = btn.nextElementSibling;
-      panel.classList.toggle('open');
+      const isOpen = btn.classList.toggle('open');
+      btn.setAttribute('aria-expanded', String(isOpen));
+      btn.nextElementSibling.classList.toggle('open');
     }
 
     // ─── TYPING INDICATOR ─────────────────────────────────────────
@@ -1327,13 +1650,15 @@
       const wrap = document.createElement('div');
       wrap.className = 'msg ai';
       wrap.id = id;
+      wrap.setAttribute('aria-label', 'Assistant is typing');
+      wrap.setAttribute('aria-live', 'polite');
       wrap.innerHTML = `
-        <div class="msg-avatar">⚽</div>
+        <div class="msg-avatar" aria-hidden="true">⚽</div>
         <div class="msg-body">
-          <div class="typing-indicator">
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
+          <div class="typing-indicator" role="status" aria-label="Loading answer">
+            <div class="typing-dot" aria-hidden="true"></div>
+            <div class="typing-dot" aria-hidden="true"></div>
+            <div class="typing-dot" aria-hidden="true"></div>
           </div>
         </div>`;
       messages.appendChild(wrap);
@@ -1345,38 +1670,43 @@
       document.getElementById(id)?.remove();
     }
 
-    // ─── HELPERS ──────────────────────────────────────────────────
+    // ─── SEND / STOP ──────────────────────────────────────────────
     function handleSendButton() {
       if (isLoading) {
-        stopCurrentRequest();
+        currentAbortController?.abort();
+        showToast('Request cancelled');
       } else {
         sendQuestion();
-      }
-    }
-
-    function stopCurrentRequest() {
-      if (currentAbortController) {
-        currentAbortController.abort();
-        showToast('Request cancelled');
       }
     }
 
     function setLoading(v) {
       isLoading = v;
       const btn = document.getElementById('send-btn');
-      btn.disabled = false;
+      const input = document.getElementById('question-input');
+      btn.disabled = false; // Always keep clickable (for stop)
       if (v) {
-        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="4" y="4" width="8" height="8" rx="1"/></svg>`;
+        btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><rect x="2" y="2" width="8" height="8" rx="1"/></svg>`;
+        btn.setAttribute('aria-label', 'Stop generating');
         btn.title = 'Stop';
+        input.disabled = true;
       } else {
-        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M14.5 8L1.5 1.5L4 8L1.5 14.5L14.5 8Z"/></svg>`;
+        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M14.5 8L1.5 1.5L4 8L1.5 14.5L14.5 8Z"/></svg>`;
+        btn.setAttribute('aria-label', 'Send question');
         btn.title = 'Send (Enter)';
+        input.disabled = false;
+        input.focus();
       }
     }
 
+    // ─── HELPERS ──────────────────────────────────────────────────
     function scrollBottom() {
       const m = document.getElementById('messages');
       requestAnimationFrame(() => { m.scrollTop = m.scrollHeight; });
+    }
+
+    function formatTime() {
+      return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
     function escHtml(str) {
@@ -1384,15 +1714,16 @@
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
     }
 
     // ─── TOAST ────────────────────────────────────────────────────
     let toastTimer;
-    function showToast(msg, isError = false) {
+    function showToast(msg, type = '') {
       const t = document.getElementById('toast');
       t.textContent = msg;
-      t.className = 'toast show' + (isError ? ' error' : '');
+      t.className = 'toast show' + (type ? ` ${type}` : '');
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => { t.className = 'toast'; }, 3500);
     }
